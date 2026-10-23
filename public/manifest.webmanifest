@@ -1,0 +1,30 @@
+{
+  "name": "Vermogensoverzicht",
+  "short_name": "Vermogen",
+  "description": "Maandelijks overzicht van je netto vermogen",
+  "start_url": "/vermogen/",
+  "scope": "/vermogen/",
+  "display": "standalone",
+  "background_color": "#F3F5F9",
+  "theme_color": "#0C1830",
+  "lang": "nl",
+  "icons": [
+    {
+      "src": "/vermogen/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/vermogen/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/vermogen/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/vermogen/"
+}
