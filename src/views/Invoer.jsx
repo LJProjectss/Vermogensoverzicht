@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CATEGORIES, catOf, isDebt, typeOf } from '../lib/model.js';
 import { previousMonthKey, suspicious } from '../lib/calc.js';
 import { addMonths, currentMonth, fmtEur, fmtNum, fmtSigned, monthLong, parseAmount } from '../lib/format.js';
+import MonthPicker from '../components/MonthPicker.jsx';
 
 function buildDraft(state, month) {
   const snap = state.months[month];
@@ -145,6 +146,7 @@ export default function Invoer({ state, setState, withUndo, month, setMonth, goT
   }
 
   const future = month > currentMonth();
+  const firstYear = Math.min(+currentMonth().slice(0, 4) - 10, ...Object.keys(state.months).map((k) => +k.slice(0, 4)));
 
   return (
     <div className="stack">
@@ -152,14 +154,8 @@ export default function Invoer({ state, setState, withUndo, month, setMonth, goT
       <div className="card">
         <div className="month-bar">
           <button className="icon-btn" aria-label="Vorige maand" onClick={() => go(addMonths(month, -1))}>‹</button>
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => e.target.value && go(e.target.value)}
-            aria-label="Maand"
-          />
+          <MonthPicker value={month} onChange={go} fromYear={firstYear} />
           <button className="icon-btn" aria-label="Volgende maand" onClick={() => go(addMonths(month, 1))}>›</button>
-          <h2 className="month-title">{monthLong(month)}</h2>
           {month !== currentMonth() && (
             <button className="ghost small" onClick={() => go(currentMonth())}>Naar deze maand</button>
           )}

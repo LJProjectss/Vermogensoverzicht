@@ -1,4 +1,4 @@
-// Browsertest van de gebouwde app in Edge of Chrome (die al op de computer staan).
+// Browsertest van de gebouwde app in Edge of Chrome (die al op de computer staan), of een andere Chromium.
 // Uitvoeren: npm run test:e2e   (bouwt eerst de app)
 // Schermafbeeldingen komen in tests/screenshots/.
 import { mkdirSync } from 'node:fs';
@@ -12,11 +12,19 @@ const OUT = fileURLToPath(new URL('./screenshots/', import.meta.url));
 mkdirSync(OUT, { recursive: true });
 
 const server = await preview({ preview: { port: PORT, strictPort: true }, logLevel: 'silent' });
+// Volgorde: een eigen pad (CHROME_PATH), Edge, Chrome, en anders de Chromium van Playwright
+// (eenmalig te installeren met: npx playwright install chromium).
 let browser;
-for (const channel of ['msedge', 'chrome']) {
-  try { browser = await chromium.launch({ channel, headless: true }); break; } catch { /* volgende proberen */ }
+const options = [
+  process.env.CHROME_PATH && { executablePath: process.env.CHROME_PATH },
+  { channel: 'msedge' },
+  { channel: 'chrome' },
+  {},
+].filter(Boolean);
+for (const opt of options) {
+  try { browser = await chromium.launch({ ...opt, headless: true }); break; } catch { /* volgende proberen */ }
 }
-if (!browser) throw new Error('Geen Edge of Chrome gevonden.');
+if (!browser) throw new Error('Geen browser gevonden. Installeer Edge of Chrome, of zet CHROME_PATH naar een Chromium-browser.');
 
 const errors = [];
 let failures = 0;
@@ -42,7 +50,7 @@ try {
   // Overzicht + back-upherinnering + inflatie
   await nav('Overzicht');
   await page.waitForSelector('.ledger');
-  check((await page.locator('.warn-banner', { hasText: 'back-up' }).count()) === 1, 'back-upherinnering zichtbaar');
+  check((await page.locator('.todo-card li', { hasText: 'back-up' }).count()) === 1, 'back-upherinnering zichtbaar');
   await page.locator('label.switch', { hasText: 'Gecorrigeerd voor inflatie' }).click();
   await page.waitForFunction(() => /CBS-maand|niet worden opgehaald/.test(document.querySelector('.inflation-note')?.textContent || ''), null, { timeout: 30000 });
   check(/CBS-maand/.test(await page.locator('.inflation-note').textContent()), 'CBS-inflatiecijfers opgehaald');

@@ -209,6 +209,15 @@ textarea { width: 100%; resize: vertical; }
 .banner.error { background: var(--err-bg); color: var(--down); }
 .banner.ok { background: var(--ok-bg); color: var(--up); }
 .banner.warn-banner { background: var(--warn-bg); color: var(--warn-ink); }
+.todo-card { padding: 16px 20px; }
+.todo-card h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+.todo-card ul { list-style: none; margin: 0; padding: 0; }
+.todo-card li { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 0; font-size: 0.875rem; }
+.todo-card li + li { border-top: 1px solid var(--border); }
+.todo-icon { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); flex: none; }
+.todo-card li.todo-warn .todo-icon { background: var(--warn-bg); }
+.todo-text { flex: 1 1 220px; min-width: 0; }
+.todo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .msg { font-size: 0.875rem; }
 .msg.ok { color: var(--up); }
 .msg.error { color: var(--danger); }
@@ -279,6 +288,9 @@ textarea { width: 100%; resize: vertical; }
 /* ---------- Maand invullen ---------- */
 .month-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .month-title { margin-left: 8px; flex: 1; font-size: 1rem; }
+.month-picker { display: inline-flex; gap: 6px; }
+.month-picker select { font-size: 1rem; font-weight: 600; width: auto; }
+.month-bar > .ghost { margin-left: auto; }
 .month-title::first-letter { text-transform: uppercase; }
 .status-line { margin-top: 10px; }
 .entry-row {
@@ -453,7 +465,8 @@ button.link { background: none; border: 0; padding: 0; color: var(--accent); tex
   .entry-row > [data-label]::before { content: attr(data-label); font-size: 0.75rem; color: var(--muted); }
   .entry-row > .num { align-items: flex-start; text-align: left; }
   .entry-spacer { display: none !important; }
-  .save-bar { padding: 10px 14px; flex-wrap: nowrap; bottom: calc(68px + env(safe-area-inset-bottom)); }
-  .save-net { font-size: 1.1rem; }
-  .save-net .small { display: block; }
+  /* Op de telefoon één smalle regel (bedrag + knop), zodat de balk zo min mogelijk invoervelden afdekt */
+  .save-bar { padding: 8px 8px 8px 14px; flex-wrap: nowrap; bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .save-bar > div:first-child > .muted.small, .save-net .small { display: none; }
+  .save-net { font-size: 1.05rem; }
 }

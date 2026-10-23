@@ -40,6 +40,8 @@ export const fmtCompact = (v) => {
 const MONTHS_SHORT = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 const MONTHS_LONG = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 
+export const MONTH_NAMES = MONTHS_LONG;
+
 export const monthShort = (m) => {
   const [y, mo] = m.split('-');
   return `${MONTHS_SHORT[+mo - 1]} '${y.slice(2)}`;

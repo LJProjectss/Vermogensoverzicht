@@ -37,7 +37,8 @@ function hubBackup() {
   }
 }
 
-function BackupReminder({ state, quickBackup, setSettings, syncActive }) {
+// Back-upherinnering als regel voor de "Te doen"-kaart (of null).
+function backupTodo({ state, quickBackup, setSettings, syncActive }) {
   const { backupSnoozeUntil } = state.settings;
   const lastExport = [state.settings.lastExport, hubBackup()].filter(Boolean).sort().pop() || null;
   if (!state.accounts.length || !Object.keys(state.months).length) return null;
@@ -45,17 +46,43 @@ function BackupReminder({ state, quickBackup, setSettings, syncActive }) {
   const days = lastExport ? Math.floor((Date.now() - new Date(lastExport).getTime()) / 86400000) : null;
   if (days != null && days <= (syncActive ? BACKUP_DAYS_SYNC : BACKUP_DAYS)) return null;
   const snooze = () => setSettings({ backupSnoozeUntil: new Date(Date.now() + 7 * 86400000).toISOString() });
-  return (
-    <div className="banner warn-banner">
-      <span>
-        💾 {days == null ? 'Je hebt nog geen back-up gemaakt.' : `Je laatste back-up is ${days} dagen oud.`}{' '}
-        {syncActive ? 'Google Drive is gekoppeld, maar een eigen kopie is verstandig.' : 'Je gegevens staan alleen in deze browser.'}
-      </span>
-      <span className="row gap">
+  return {
+    key: 'backup',
+    icon: '💾',
+    warn: true,
+    text: (
+      <>
+        {days == null ? 'Je hebt nog geen back-up gemaakt.' : `Je laatste back-up is ${days} dagen oud.`}{' '}
+        <span className="muted">
+          {syncActive ? 'Google Drive is gekoppeld, maar een eigen kopie is verstandig.' : 'Je gegevens staan alleen in deze browser.'}
+        </span>
+      </>
+    ),
+    actions: (
+      <>
         <button className="primary small" onClick={quickBackup}>Back-up downloaden</button>
         <button className="ghost small" onClick={snooze}>Over een week</button>
-      </span>
-    </div>
+      </>
+    ),
+  };
+}
+
+// Alle meldingen samen in één kaart, zodat het overzicht niet achter losse balken wegzakt.
+function TodoCard({ items }) {
+  if (!items.length) return null;
+  return (
+    <section className="card todo-card" aria-label="Te doen">
+      <h2>Te doen</h2>
+      <ul>
+        {items.map((it) => (
+          <li key={it.key} className={it.warn ? 'todo-warn' : ''}>
+            <span className="todo-icon" aria-hidden="true">{it.icon}</span>
+            <span className="todo-text">{it.text}</span>
+            <span className="todo-actions">{it.actions}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -114,14 +141,17 @@ export default function Dashboard({ state, setSettings, chart, thisMonthMissing,
         <h1>Overzicht</h1>
       </div>
 
-      {thisMonthMissing && (
-        <div className="banner">
-          <span>📅 {monthLong(currentMonth())} is nog niet ingevuld.</span>
-          <button className="primary small" onClick={() => goInvoer(currentMonth())}>Nu invullen</button>
-        </div>
-      )}
-
-      <BackupReminder state={state} quickBackup={quickBackup} setSettings={setSettings} syncActive={syncActive} />
+      <TodoCard
+        items={[
+          thisMonthMissing && {
+            key: 'maand',
+            icon: '📅',
+            text: `${monthLong(currentMonth()).replace(/^./, (c) => c.toUpperCase())} is nog niet ingevuld.`,
+            actions: <button className="primary small" onClick={() => goInvoer(currentMonth())}>Nu invullen</button>,
+          },
+          backupTodo({ state, quickBackup, setSettings, syncActive }),
+        ].filter(Boolean)}
+      />
 
       <div className="controls">
         <div className="segmented" role="group" aria-label="Periode">
